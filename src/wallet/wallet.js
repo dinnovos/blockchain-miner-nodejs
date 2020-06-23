@@ -6,21 +6,31 @@ const INITIAL_BALANCE = 100;
 
 const TYPE = { 
 	MINER: 'miner',
-	USER: 'user',
 	BLOCKCHAIN: 'blockchain',
 };
 
 class Wallet{
-	constructor(blockchain, initialBalance = INITIAL_BALANCE, type = TYPE.USER){
+	constructor(blockchain, initialBalance = INITIAL_BALANCE, keys, type = TYPE.MINER){
+
+		let keyPair = null;
+		let publicKey = null;
+		
+		if(Object.keys(keys).length === 0){
+			keyPair = elliptic.createKeyPair();
+			publicKey = keyPair.getPublic().encodeCompressed("hex");
+		}else{
+			keyPair = keys.keyPair;
+			publicKey = keys.publicKey;
+		}
 
 		// Solo se debe usar como balance inicial, no como balance actualizado
 		this.balance = initialBalance;
 
 		// Clave privada
-		this.keyPair = elliptic.createKeyPair();
+		this.keyPair = keyPair;
 
 		// Clave publica
-		this.publicKey = this.keyPair.getPublic().encodeCompressed("hex");
+		this.publicKey = publicKey;
 
 		this.blockchain = blockchain;
 

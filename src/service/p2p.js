@@ -1,4 +1,5 @@
 import  webSocket from 'ws';
+import Helpers from '../tools';
 
 //const { P2P_PORT = 5000, PEERS } = process.env;
 //const peers = PEERS ? PEERS.split(",") : [];
@@ -10,10 +11,12 @@ const MESSAGE = {
 };
 
 class P2PService{
-	constructor(port, peers, blockchain){
+	constructor(port, peers, name, blockchain, wallet){
 		this.port = port;
 		this.peers = peers;
+		this.name = name;
 		this.blockchain = blockchain;
+		this.wallet = wallet;
 		this.sockets = [];
 	}
 
@@ -34,14 +37,10 @@ class P2PService{
 			// Por cada peer llamo a onConneciton para guardar en la instancia ese socket
 			socket.on("open", () => this.onConnection(socket));
 		});
-
-		console.log(`Service WS: ${this.port} listening...`);
 	}
 
 	onConnection(socket){
-		const { blockchain } = this;
-
-		console.log('[ws:socket connect]');
+		const { name, peers, blockchain, wallet } = this;
 
 		// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
 		this.sockets.push(socket);
@@ -49,19 +48,23 @@ class P2PService{
 		// Cuando recibo el mensaje, obtengo una lista de bloque del nodo al que me he contacto
 		// Luego intento reemplazar esa lista de bloque por la lista de la instancia actual
 		socket.on("message", (message) => {
+
 			const { type, value } = JSON.parse(message);
 
-			try{
+			
 				if(type === MESSAGE.BLOCKS)
 					blockchain.replace(value);
 				else if(type === MESSAGE.TX)
 					blockchain.memoryPool.addOrUpdate(value);
 				else if(type === MESSAGE.WIPE)
 					blockchain.memoryPool.wipe();
+				try{
 			}catch(error){
 				console.log(`[ws:message] error ${error}`);
-				throw Error(error);
+				//throw Error(error);
 			}
+
+			Helpers.printInfo(name, peers, blockchain, wallet);
 		});
 
 		// Cuando se establece una conexion se envia a ese nodo los bloques que tiene la instancia actual
