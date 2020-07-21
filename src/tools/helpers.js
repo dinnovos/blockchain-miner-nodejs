@@ -36,7 +36,7 @@ Helpers.getWalletInfo = (type, name) => {
 
 		    if(key){
 
-		    	fetch(process.env.HOST_SERVER_API + '/miner-wallet', { method: 'POST', body: JSON.stringify({key: key}), headers: { 'Content-Type': 'application/json'}})
+		    	fetch(process.env.HOST_SERVER_API + '/wallet/create/miner', { method: 'POST', body: JSON.stringify({key: key}), headers: { 'Content-Type': 'application/json'}})
 				    .then(res => res.json())
 				    .then(json => {
 				    	resolve(json);
