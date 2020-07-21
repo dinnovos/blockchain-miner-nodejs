@@ -36,7 +36,7 @@
     "miner": "babel-node miner.js",
     "clean": "rm -rf dist && mkdir dist",
     "build": "yarn clean && babel src -s -d dist && cp -r src/service/views dist/service/views",
-    "start:prod": "yarn build && pm2 start ./dist/service/index.js --name blockchain --log activity.log",
+    "start:prod": "yarn build && pm2 start ./dist/service/index.js --name blockchain-miner --log activity.log",
     "pkg": "yarn build && pkg ./dist/service/index.js"
   },
   "dependencies": {
